@@ -1,0 +1,31 @@
+version: "3"
+services:
+  calender-server:
+    container_name: calender-server
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080
+    volumes:
+      - ./calender:/go/src/calender:cached
+    tty: true
+    depends_on:
+      - db
+  db:
+    container_name: calender-db
+    build:
+      context: .
+      dockerfile: ./MySQL/Dockerfile
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: calender_db
+      MYSQL_USER: root
+      MYSQL_PASSWORD: password
+    ports:
+      - 3306:3306
+    tty: true
+    volumes:
+      - ./MySQL/mysql_init:/docker-entrypoint-initdb.d:cached
+      - ./MySQL/mysql_data:/var/lib/mysql:cached
+    command: mysqld --character-set-server=utf8 --collation-server=utf8_unicode_ci --skip-character-set-client-handshake
