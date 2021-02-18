@@ -49,3 +49,9 @@ func (this *ScheduleController) GetScheduleData() {
 	this.Data["json"] = scheduleArr
 	this.ServeJSON()
 }
+
+func (this *ScheduleController) DeleteSchedule() {
+	id, _ := this.GetInt64("id")
+	o := orm.NewOrm()
+	o.Delete(&models.Schedule{Id: id})
+}
