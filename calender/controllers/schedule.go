@@ -18,6 +18,7 @@ func (this *ScheduleController) RegisterSchedule() {
 	month := this.GetString("month")
 	day := this.GetString("day")
 	scheduledTime := this.GetString("scheduledTime")
+	color := this.GetString("color")
 
 	o := orm.NewOrm()
 	user := models.User{Id: id}
@@ -32,6 +33,7 @@ func (this *ScheduleController) RegisterSchedule() {
 	schedule.Month = month
 	schedule.Day = day
 	schedule.ScheduleTime = scheduledTime
+	schedule.Color = color
 	if _, err := o.Insert(&schedule); err != nil {
 		return
 	}

@@ -10,6 +10,7 @@ type Schedule struct {
 	Month        string    `orm:"size(10)"`
 	Day          string    `orm:"size(10)"`
 	ScheduleTime string    `orm:"size(30)"`
+	Color        string    `orm:"size(20)"`
 	Created      time.Time `orm:"auto_now_add;type(datetime)"`
 	Updated      time.Time `orm:"auto_now;type(datetime)"`
 }
