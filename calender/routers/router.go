@@ -20,4 +20,5 @@ func init() {
 	beego.Router("/registerSchedule", &controllers.ScheduleController{}, "post:RegisterSchedule")
 	beego.Router("/getScheduleData/?:id", &controllers.ScheduleController{}, "get:GetScheduleData")
 	beego.Router("/deleteSchedule", &controllers.ScheduleController{}, "post:DeleteSchedule")
+	beego.Router("/editSchedule", &controllers.ScheduleController{}, "post:EditSchedule")
 }

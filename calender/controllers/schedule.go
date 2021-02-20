@@ -2,6 +2,8 @@ package controllers
 
 import (
 	"calender/models"
+	"sort"
+	"time"
 
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
@@ -48,6 +50,13 @@ func (this *ScheduleController) GetScheduleData() {
 	var scheduleArr []models.Schedule
 	o.QueryTable(new(models.Schedule)).Filter("user_id", userId).All(&scheduleArr)
 
+	sort.Slice(scheduleArr, func(i, j int) bool {
+		layout := "15:04"
+		timeVal, _ := time.Parse(layout, scheduleArr[i].ScheduleTime)
+		nextTimeVal, _ := time.Parse(layout, scheduleArr[j].ScheduleTime)
+		return timeVal.Before(nextTimeVal)
+	})
+
 	this.Data["json"] = scheduleArr
 	this.ServeJSON()
 }
@@ -56,4 +65,25 @@ func (this *ScheduleController) DeleteSchedule() {
 	id, _ := this.GetInt64("id")
 	o := orm.NewOrm()
 	o.Delete(&models.Schedule{Id: id})
+}
+
+func (this *ScheduleController) EditSchedule() {
+	id, _ := this.GetInt64("id")
+	name := this.GetString("name")
+	time := this.GetString("time")
+
+	schedule := models.Schedule{Id: id}
+	o := orm.NewOrm()
+	if err := o.Read(&schedule); err != nil {
+		return
+	}
+
+	schedule.Name = name
+	schedule.ScheduleTime = time
+	if _, err := o.Update(&schedule); err != nil {
+		return
+	}
+
+	this.Data["json"] = schedule
+	this.ServeJSON()
 }
