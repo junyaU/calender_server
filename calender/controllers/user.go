@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"calender/models"
+	"fmt"
 	"time"
 
 	"github.com/astaxie/beego"
@@ -10,7 +11,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// Operations about Users
 type UserController struct {
 	beego.Controller
 }
@@ -33,8 +33,6 @@ func (this *UserController) CreateUser() {
 	}
 
 	token := CreateJwt(user.Id, user.Name)
-	user.JwtToken = token
-	o.Update(&user)
 	this.Data["json"] = token
 	this.ServeJSON()
 }
@@ -54,8 +52,6 @@ func (this *UserController) Login() {
 	}
 
 	token := CreateJwt(user.Id, user.Name)
-	user.JwtToken = token
-	o.Update(&user)
 	this.Data["json"] = token
 	this.ServeJSON()
 }
@@ -84,4 +80,30 @@ func CreateJwt(id int64, name string) string {
 
 	tokenString, _ := token.SignedString([]byte(beego.AppConfig.String("JwtSecretKey")))
 	return tokenString
+}
+
+func VerificationToken(tokenString string) (*jwt.Token, error) {
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("error!")
+		}
+		return []byte(beego.AppConfig.String("JwtSecretKey")), nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return token, nil
+}
+
+func TokenValidation(tokenString string) error {
+	token, err := VerificationToken(tokenString)
+	if err != nil {
+		return err
+	}
+	if _, ok := token.Claims.(jwt.Claims); !ok && !token.Valid {
+		return err
+	}
+
+	return nil
 }

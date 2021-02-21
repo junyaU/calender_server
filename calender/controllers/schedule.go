@@ -21,6 +21,12 @@ func (this *ScheduleController) RegisterSchedule() {
 	day := this.GetString("day")
 	scheduledTime := this.GetString("scheduledTime")
 	color := this.GetString("color")
+	token := this.GetString("token")
+
+	err := TokenValidation(token)
+	if err != nil {
+		return
+	}
 
 	o := orm.NewOrm()
 	user := models.User{Id: id}
@@ -63,14 +69,28 @@ func (this *ScheduleController) GetScheduleData() {
 
 func (this *ScheduleController) DeleteSchedule() {
 	id, _ := this.GetInt64("id")
+	token := this.GetString("token")
+
+	err := TokenValidation(token)
+	if err != nil {
+		return
+	}
 	o := orm.NewOrm()
 	o.Delete(&models.Schedule{Id: id})
+	this.Data["json"] = "ok"
+	this.ServeJSON()
 }
 
 func (this *ScheduleController) EditSchedule() {
 	id, _ := this.GetInt64("id")
 	name := this.GetString("name")
 	time := this.GetString("time")
+	token := this.GetString("token")
+
+	err := TokenValidation(token)
+	if err != nil {
+		return
+	}
 
 	schedule := models.Schedule{Id: id}
 	o := orm.NewOrm()
